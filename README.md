@@ -1,2 +1,0 @@
-# fengchenzxc.github.io
-wiki
